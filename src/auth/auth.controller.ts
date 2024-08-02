@@ -6,7 +6,6 @@ import {
   HttpStatus,
   ClassSerializerInterceptor,
   UseInterceptors,
-  SerializeOptions,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -15,7 +14,6 @@ import { SignInDto } from './dto/sign-in.dto';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
-@SerializeOptions({ groups: ['auth'] })
 export class AuthController {
   constructor(private authService: AuthService) {}
   @ApiOperation({ summary: 'Login with email or username' })
