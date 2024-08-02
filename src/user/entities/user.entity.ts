@@ -13,8 +13,29 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
+  @Column({ nullable: true })
+  firstName: string;
+
+  @Column({ nullable: true })
+  lastName: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  birth: Date;
+
+  @Column({ default: false })
+  verified: boolean;
+
+  @Column({ nullable: true, default: null })
+  location_id: number;
+
+  @Column({ nullable: false, default: false })
+  notification_each_day: boolean;
+
+  @Column({ default: null, nullable: true })
+  location_query: string;
 
   @Column({ unique: true, nullable: false })
   email: string;
