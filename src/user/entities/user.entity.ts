@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Verification } from 'src/auth/verification.entity';
 
 @Entity('users')
 export class User {
@@ -52,6 +54,11 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @OneToMany(() => Verification, (verification) => verification.user_id, {
+    cascade: true,
+  })
+  verifications: Verification[];
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);

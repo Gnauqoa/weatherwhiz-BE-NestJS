@@ -1,7 +1,9 @@
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,16 +20,22 @@ export class Verification {
   active: boolean;
 
   @Column({ nullable: true })
-  expiresIn: number;
+  expires_in: Date;
 
   @Column({ nullable: true, type: 'timestamptz' })
   verified_at: Date;
+
+  @Column()
+  user_id: number;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.verifications)
+  user: User;
 
   constructor(partial: Partial<Verification>) {
     Object.assign(this, partial);
