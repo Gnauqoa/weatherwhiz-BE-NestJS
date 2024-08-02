@@ -14,10 +14,10 @@ export class User {
   id: number;
 
   @Column({ nullable: true })
-  firstName: string;
+  first_name: string;
 
   @Column({ nullable: true })
-  lastName: string;
+  last_name: string;
 
   @Column({ nullable: true })
   phone: string;

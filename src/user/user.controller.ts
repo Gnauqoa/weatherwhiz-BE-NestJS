@@ -13,11 +13,11 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('users')
-@UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Get('current')
   async getCurrent(@Req() request: Request) {
     return request['user'];
@@ -29,6 +29,7 @@ export class UserController {
   }
 
   @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Patch('current')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
