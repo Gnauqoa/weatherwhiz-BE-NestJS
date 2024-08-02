@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import * as bcyrpt from 'bcryptjs';
 import {
   Column,
@@ -43,8 +43,8 @@ export class User {
   @Column({ unique: true, nullable: false })
   username: string;
 
-  @Column({ nullable: false, default: bcyrpt.hashSync('123456', 10) })
   @Exclude({ toPlainOnly: true })
+  @Column({ nullable: false, default: bcyrpt.hashSync('123456', 10) })
   password: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
