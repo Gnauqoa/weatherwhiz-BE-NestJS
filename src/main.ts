@@ -11,7 +11,7 @@ async function bootstrap() {
   swaggerService.setupSwagger(app);
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();
