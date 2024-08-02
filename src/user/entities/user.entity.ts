@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import * as bcyrpt from 'bcryptjs';
 import {
   Column,
   CreateDateColumn,
@@ -21,7 +22,8 @@ export class User {
   @Column({ unique: true, nullable: false })
   username: string;
 
-  @Exclude()
+  @Column({ nullable: false, default: bcyrpt.hashSync('123456', 10) })
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
@@ -29,4 +31,8 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
+  }
 }

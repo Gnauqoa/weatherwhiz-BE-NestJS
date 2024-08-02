@@ -7,6 +7,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UsersService } from 'src/user/user.service';
+import { SignInDto } from './dto/sign-in.dto';
+import * as bcrypt from 'bcryptjs';
+import { User } from 'src/user/entities/user.entity';
 
 @Dependencies(UsersService, JwtService)
 @Injectable()
@@ -16,17 +19,20 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signIn(username, pass) {
-    const user = await this.usersService.findByAccount(username);
-    if (user?.password !== pass) {
-      throw new UnauthorizedException();
-    }
-    const payload = { user_id: user.id };
+  async signIn(payload: SignInDto) {
+    const user = await this.validateUser(payload);
+
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync({ user_id: user.id }),
     };
   }
-
+  async validateUser(payload: SignInDto): Promise<User> {
+    const user = await this.usersService.findByAccount(payload.account);
+    if (user && (await bcrypt.compare(payload.password, user.password))) {
+      return user;
+    }
+    throw new UnauthorizedException();
+  }
   async signUp(payload: CreateUserDto) {
     const user = await this.usersService.create(payload);
     if (!user) {

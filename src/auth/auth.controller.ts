@@ -1,16 +1,28 @@
-import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  HttpCode,
+  HttpStatus,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+  SerializeOptions,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
+@SerializeOptions({ groups: ['auth'] })
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  @ApiOperation({ summary: 'Login with email or username' })
   @HttpCode(HttpStatus.OK)
-  @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  @Post('sign_in')
+  signIn(@Body() signInDto: SignInDto) {
+    return this.authService.signIn(signInDto);
   }
 
   @ApiOperation({ summary: 'Register a new user' })
