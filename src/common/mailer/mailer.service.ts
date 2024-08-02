@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { MailerService as NestMailerService } from '@nestjs-modules/mailer';
 import { SendVerificationEmailDto } from './send-verification-email.dto';
 
@@ -24,10 +24,8 @@ export class MailerService {
         success: true,
       };
     } catch (error) {
-      console.error('Error sending email: ', error);
-      return {
-        success: false,
-      };
+      console.error('Error sending email: ');
+      throw new InternalServerErrorException(error);
     }
   }
 }
