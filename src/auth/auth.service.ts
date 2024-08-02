@@ -9,7 +9,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UsersService } from 'src/user/user.service';
 import { SignInDto } from './dto/sign-in.dto';
 import * as bcrypt from 'bcryptjs';
-import { User } from 'src/user/entities/user.entity';
+import { User } from 'src/common/database/entities/user.entity';
 
 @Dependencies(UsersService, JwtService)
 @Injectable()
