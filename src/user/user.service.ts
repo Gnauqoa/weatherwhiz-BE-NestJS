@@ -8,17 +8,27 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
+  async create(
+    createUserDto: CreateUserDto,
+    manager?: EntityManager,
+  ): Promise<User> {
+    const userRepository = manager
+      ? manager.getRepository(User)
+      : this.userRepository;
+    const user = userRepository.create({
+      ...createUserDto,
+      password: await bcrypt.hashSync(createUserDto.password, 10),
+    });
     await this.validateNewUser(user.email, user.username);
-    return await this.userRepository.save(user);
+    return await userRepository.save(user);
   }
 
   async validateNewUser(email: string, username: string): Promise<boolean> {

@@ -8,7 +8,7 @@ import { User } from 'src/user/entities/user.entity';
 import { MailerService } from 'src/common/mailer/mailer.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Verification } from './verification.entity';
-import { Repository, DataSource, QueryRunner } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { generateRandomHexString } from 'src/utils/random';
 import * as dayjs from 'dayjs';
 
@@ -46,16 +46,13 @@ export class AuthService {
 
     try {
       // Create the user
-      const user = await queryRunner.manager
-        .getRepository(User)
-        .save(queryRunner.manager.getRepository(User).create(payload));
-
+      const user = await this.usersService.create(payload, queryRunner.manager);
       if (!user) {
         throw new UnauthorizedException();
       }
 
       // Create verification and send email
-      await this.sendVerificationEmail(user, queryRunner);
+      await this.sendVerificationEmail(user, queryRunner.manager);
 
       await queryRunner.commitTransaction();
 
@@ -73,9 +70,8 @@ export class AuthService {
     }
   }
 
-  async sendVerificationEmail(user: User, queryRunner: QueryRunner) {
-    const verificationRepository =
-      queryRunner.manager.getRepository(Verification);
+  async sendVerificationEmail(user: User, manager: EntityManager) {
+    const verificationRepository = manager.getRepository(Verification);
     const verification = await verificationRepository.findOne({
       where: { user: user },
       order: { createdAt: 'DESC' },
