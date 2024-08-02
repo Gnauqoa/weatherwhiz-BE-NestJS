@@ -6,13 +6,16 @@ import {
   HttpStatus,
   ClassSerializerInterceptor,
   UseInterceptors,
+  Param,
+  Put,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in.dto';
 
 @Controller('users')
+@ApiTags('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -28,5 +31,12 @@ export class AuthController {
   @Post('')
   signUp(@Body() signUpDto: CreateUserDto) {
     return this.authService.signUp(signUpDto);
+  }
+
+  @ApiOperation({ summary: 'Verifi email' })
+  @HttpCode(HttpStatus.OK)
+  @Put('/verify/:id/:code')
+  verifyEmail(@Param('id') id: number, @Param('code') code: string) {
+    return this.authService.verifyEmail({ userId: id, code });
   }
 }

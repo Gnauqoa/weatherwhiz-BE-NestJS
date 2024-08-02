@@ -8,9 +8,10 @@ import { User } from 'src/user/entities/user.entity';
 import { MailerService } from 'src/common/mailer/mailer.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Verification } from './verification.entity';
-import { Repository, DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { generateRandomHexString } from 'src/utils/random';
 import * as dayjs from 'dayjs';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,8 @@ export class AuthService {
     private readonly mailerService: MailerService,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource, // Inject DataSource
   ) {}
 
@@ -70,8 +73,10 @@ export class AuthService {
     }
   }
 
-  async sendVerificationEmail(user: User, manager: EntityManager) {
-    const verificationRepository = manager.getRepository(Verification);
+  async sendVerificationEmail(user: User, manager?: EntityManager) {
+    const verificationRepository = manager
+      ? manager.getRepository(Verification)
+      : this.verificationRepository;
     const verification = await verificationRepository.findOne({
       where: { user: user },
       order: { createdAt: 'DESC' },
@@ -100,5 +105,29 @@ export class AuthService {
       verificationCode: newVerification.verification_code,
       userId: user.id.toString(),
     });
+  }
+
+  async verifyEmail(payload: VerifyEmailDto) {
+    const verification = await this.verificationRepository.findOne({
+      where: { user_id: payload.userId, verification_code: payload.code },
+    });
+
+    if (!verification) {
+      throw new UnauthorizedException('Invalid verification code');
+    }
+
+    if (verification.expires_in < new Date()) {
+      throw new UnauthorizedException('Verification code has expired');
+    }
+
+    verification.active = true;
+    await this.verificationRepository.save(verification);
+
+    const user = await this.usersService.findOne(verification.user_id);
+    user.verified = true;
+
+    return {
+      message: 'Email verified successfully',
+    };
   }
 }

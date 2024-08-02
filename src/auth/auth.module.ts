@@ -7,6 +7,7 @@ import { jwtConstants } from './constants';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Verification } from './verification.entity';
 import { MailerModule } from 'src/common/mailer/mailer.module';
+import { User } from 'src/user/entities/user.entity';
 
 @Module({
   providers: [AuthService],
@@ -19,7 +20,7 @@ import { MailerModule } from 'src/common/mailer/mailer.module';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '30d' },
     }),
-    TypeOrmModule.forFeature([Verification]),
+    TypeOrmModule.forFeature([Verification, User]),
   ],
 })
 export class AuthModule {}
