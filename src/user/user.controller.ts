@@ -2,10 +2,10 @@ import {
   Controller,
   Get,
   Body,
-  Patch,
   Param,
   UseGuards,
   Req,
+  Put,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -30,7 +30,7 @@ export class UserController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Patch('current')
+  @Put('current')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
