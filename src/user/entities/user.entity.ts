@@ -15,11 +15,13 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   email: string;
 
+  @Column({ unique: true, nullable: false })
+  username: string;
+
   @Exclude()
-  @Column()
   password: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
