@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,7 +17,21 @@ export class UsersService {
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
+    await this.validateNewUser(user.email, user.username);
     return await this.userRepository.save(user);
+  }
+
+  async validateNewUser(email: string, username: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: [{ email }, { username }],
+    });
+    if (user) {
+      throw new HttpException(
+        ['Email or username already exists'],
+        HttpStatus.CONFLICT,
+      );
+    }
+    return true;
   }
   async findByAccount(account: string): Promise<User> {
     return await this.userRepository.findOne({

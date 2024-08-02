@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UsersService } from 'src/user/user.service';
 
 @Dependencies(UsersService, JwtService)
@@ -20,9 +21,23 @@ export class AuthService {
     if (user?.password !== pass) {
       throw new UnauthorizedException();
     }
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: user.username, user_id: user.id };
     return {
       access_token: await this.jwtService.signAsync(payload),
+    };
+  }
+
+  async signUp(payload: CreateUserDto) {
+    const user = await this.usersService.create(payload);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return {
+      access_token: await this.jwtService.signAsync({
+        username: user.username,
+        user_id: user.id,
+      }),
     };
   }
 }
