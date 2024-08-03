@@ -8,9 +8,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Verification } from './verification.entity';
 import { MailerModule } from 'src/common/mailer/mailer.module';
 import { User } from 'src/user/entities/user.entity';
+import { PrismaService } from 'src/prisma.service';
 
 @Module({
-  providers: [AuthService],
+  providers: [AuthService, PrismaService],
   controllers: [AuthController],
   imports: [
     UserModule,
