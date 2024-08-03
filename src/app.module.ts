@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma.service';
+import { WeatherModule } from './weather/weather.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PrismaService } from './prisma.service';
     AuthModule,
     CommonModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    WeatherModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
