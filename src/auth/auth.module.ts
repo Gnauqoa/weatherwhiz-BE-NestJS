@@ -4,10 +4,7 @@ import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Verification } from './verification.entity';
 import { MailerModule } from 'src/common/mailer/mailer.module';
-import { User } from 'src/user/entities/user.entity';
 import { PrismaService } from 'src/prisma.service';
 
 @Module({
@@ -21,7 +18,6 @@ import { PrismaService } from 'src/prisma.service';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '30d' },
     }),
-    TypeOrmModule.forFeature([Verification, User]),
   ],
 })
 export class AuthModule {}
