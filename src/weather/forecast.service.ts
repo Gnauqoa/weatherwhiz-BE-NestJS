@@ -10,25 +10,27 @@ export class ForecastService {
     private autoComplete: AutoCompleteService,
     private paramsStr: GenerateParamsStrService,
   ) {}
-
   async getForeCast(payload: GetForecastDto) {
-    // const location_id = payload.location_id
-    //   ? payload.location_id
-    //   : (await this.autoComplete.generate(payload)).data.id;
+    try {
+      // const location_id = payload.location_id
+      //   ? payload.location_id
+      //   : (await this.autoComplete.generate(payload)).data.id;
+      const params_str = this.paramsStr.generate(payload);
+      const forecasts = (
+        await axios.get(
+          `${process.env.WEATHER_API_HOST}/forecast.json?${params_str}`,
+        )
+      ).data as ForecastData;
+      // forecasts.forecast.forecastday.map((forecastday) => {
+      //   // caching
+      // });
+      // caching weather forecast
 
-    const params_str = this.paramsStr.generate(payload);
-    const forecasts = (
-      await axios.get(
-        `${process.env.WEATHER_API_HOST}/forecast.json?${params_str}`,
-      )
-    ).data as ForecastData;
-
-    // forecasts.forecast.forecastday.map((forecastday) => {
-    //   // caching
-    // });
-    // caching weather forecast
-
-    return forecasts;
+      return forecasts;
+    } catch (err) {
+      console.log(err);
+      throw new Error('Error');
+    }
   }
 
   async loadCache() {}

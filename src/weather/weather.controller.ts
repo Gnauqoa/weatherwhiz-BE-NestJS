@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ForecastService } from './forecast.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -11,7 +11,10 @@ export class WeatherController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('forecast')
-  async getForecast(@Param('q') q: string, @Param('days') days: number) {
-    return await this.forecastService.getForeCast({ q, days });
+  async getForecast(
+    @Query('q') q: string = 'London',
+    @Query('days') days: number = 1,
+  ) {
+    return { data: await this.forecastService.getForeCast({ q, days }) };
   }
 }
