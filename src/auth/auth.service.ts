@@ -7,7 +7,7 @@ import * as bcrypt from 'bcryptjs';
 import { MailerService } from 'src/common/mailer/mailer.service';
 import { PrismaService } from 'src/prisma.service';
 import { generateRandomHexString } from 'src/utils/random';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { User } from '@prisma/client';
 
@@ -90,24 +90,31 @@ export class AuthService {
 
   async verifyEmail(payload: VerifyEmailDto) {
     const verification = await this.prisma.verification.findFirst({
-      where: { user_id: payload.userId, verification_code: payload.code },
+      where: {
+        user_id: Number(payload.userId),
+        verification_code: payload.code,
+      },
     });
 
     if (!verification) {
       throw new UnauthorizedException('Invalid verification code');
     }
-
-    if (verification.expired_at < new Date()) {
+    if (verification.verified_at) {
+      throw new UnauthorizedException('Email already verified');
+    }
+    if (!verification.active || verification.expired_at < new Date()) {
       throw new UnauthorizedException('Verification code has expired');
     }
 
     await this.prisma.verification.update({
       where: { id: verification.id },
-      data: { active: true },
+      data: { active: true, verified_at: new Date() },
     });
 
-    const user = await this.usersService.findOne(verification.user_id);
-    user.verified = true;
+    await this.prisma.user.update({
+      where: { id: Number(payload.userId) },
+      data: { verified: true },
+    });
 
     return {
       message: 'Email verified successfully',

@@ -22,21 +22,21 @@ export class AuthController {
   @ApiOperation({ summary: 'Login with email or username' })
   @HttpCode(HttpStatus.OK)
   @Post('sign_in')
-  signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto);
+  async signIn(@Body() signInDto: SignInDto) {
+    return await this.authService.signIn(signInDto);
   }
 
   @ApiOperation({ summary: 'Register a new user' })
   @HttpCode(HttpStatus.CREATED)
   @Post('')
-  signUp(@Body() signUpDto: CreateUserDto) {
-    return this.authService.signUp(signUpDto);
+  async signUp(@Body() signUpDto: CreateUserDto) {
+    return await this.authService.signUp(signUpDto);
   }
 
   @ApiOperation({ summary: 'Verifi email' })
   @HttpCode(HttpStatus.OK)
   @Put('/verify/:id/:code')
-  verifyEmail(@Param('id') id: number, @Param('code') code: string) {
-    return this.authService.verifyEmail({ userId: id, code });
+  async verifyEmail(@Param('id') id: number, @Param('code') code: string) {
+    return { data: await this.authService.verifyEmail({ userId: id, code }) };
   }
 }
