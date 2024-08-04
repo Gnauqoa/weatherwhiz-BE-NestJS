@@ -9,11 +9,44 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { AutoCompleteService } from 'src/weather/auto-complete.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private weatherService: AutoCompleteService,
+  ) {}
+  async updateNotificationWeather(payload: {
+    q?: string;
+    notification_each_day?: boolean;
+    user_id: number;
+  }) {
+    const data: {
+      location_query?: string;
+      notification_each_day?: boolean;
+      location_id?: number;
+    } = {};
+    if (payload.q) {
+      data.location_id = Number(
+        await this.weatherService.generate({
+          q: payload.q,
+        }),
+      );
+      data.location_query = payload.q;
+    }
+    if (payload.notification_each_day) {
+      data.notification_each_day = payload.notification_each_day;
+    }
+    await this.prisma.user.update({
+      where: {
+        id: payload.user_id,
+      },
+      data,
+    });
 
+    return { data: { message: 'Notification data updated successfully' } };
+  }
   async create(createUserDto: CreateUserDto): Promise<User> {
     const prisma = this.prisma;
     await this.validateNewUser(createUserDto.email, createUserDto.username);

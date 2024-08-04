@@ -8,7 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  UpdateUserDto,
+  UpdateUserNotificationWeatherDto,
+} from './dto/update-user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -34,5 +37,18 @@ export class UserController {
   @Put('current')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Put('notification_weather')
+  async updateNotificationWeather(
+    @Body() payload: UpdateUserNotificationWeatherDto,
+    @Req() request: Request,
+  ) {
+    return await this.usersService.updateNotificationWeather({
+      user_id: request['user'].id,
+      ...payload,
+    });
   }
 }
