@@ -12,6 +12,6 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(10000);
 }
 bootstrap();
