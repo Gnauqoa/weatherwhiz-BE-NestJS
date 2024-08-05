@@ -31,7 +31,6 @@ export class AuthService {
   }
   async signIn(payload: SignInDto) {
     const user = await this.validateUser(payload);
-
     return {
       data: {
         access_token: await this.jwtService.signAsync({ user_id: user.id }),
@@ -42,6 +41,9 @@ export class AuthService {
   async validateUser(payload: SignInDto): Promise<User> {
     const user = await this.usersService.findByAccount(payload.account);
     if (user && (await bcrypt.compare(payload.password, user.password))) {
+      if (!user.verified) {
+        throw new UnauthorizedException('Email not verified');
+      }
       return user;
     }
     throw new UnauthorizedException();
