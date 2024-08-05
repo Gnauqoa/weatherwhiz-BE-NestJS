@@ -24,7 +24,9 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('current')
   async getCurrent(@Req() request: Request) {
-    return request['user'];
+    const user = request['user'];
+    delete user.password;
+    return user;
   }
 
   @Get(':id')
@@ -46,9 +48,11 @@ export class UserController {
     @Body() payload: UpdateUserNotificationWeatherDto,
     @Req() request: Request,
   ) {
-    return await this.usersService.updateNotificationWeather({
-      user_id: request['user'].id,
-      ...payload,
-    });
+    return {
+      data: await this.usersService.updateNotificationWeather({
+        user_id: request['user'].id,
+        ...payload,
+      }),
+    };
   }
 }

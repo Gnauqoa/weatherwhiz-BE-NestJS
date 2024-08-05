@@ -16,6 +16,7 @@ export class ForecastService {
       //   ? payload.location_id
       //   : (await this.autoComplete.generate(payload)).data.id;
       const params_str = this.paramsStr.generate(payload);
+
       const forecasts = (
         await axios.get(
           `${process.env.WEATHER_API_HOST}/forecast.json?${params_str}`,

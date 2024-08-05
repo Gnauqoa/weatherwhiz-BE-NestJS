@@ -32,6 +32,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
+  confirm_password: string;
   @ApiProperty({ example: 'quang' })
   @IsString()
   @IsNotEmpty()

@@ -32,7 +32,12 @@ export class AuthController {
   async signUp(@Body() signUpDto: CreateUserDto) {
     return await this.authService.signUp(signUpDto);
   }
-
+  @ApiOperation({ summary: 'Resend verification email' })
+  @HttpCode(HttpStatus.OK)
+  @Post('verify/:id')
+  async resendVerificationEmail(@Param() params: { id: string }) {
+    return await this.authService.resendVerificationEmail(params.id);
+  }
   @ApiOperation({ summary: 'Verifi email' })
   @HttpCode(HttpStatus.OK)
   @Put('/verify/:id/:code')

@@ -19,12 +19,23 @@ export class AuthService {
     private readonly mailerService: MailerService,
     private readonly prisma: PrismaService, // Inject PrismaService
   ) {}
-
+  async resendVerificationEmail(id: string) {
+    const user = await this.usersService.findOne(Number(id));
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    await this.sendVerificationEmail(user);
+    return {
+      message: 'Verification email sent',
+    };
+  }
   async signIn(payload: SignInDto) {
     const user = await this.validateUser(payload);
 
     return {
-      access_token: await this.jwtService.signAsync({ user_id: user.id }),
+      data: {
+        access_token: await this.jwtService.signAsync({ user_id: user.id }),
+      },
     };
   }
 
@@ -66,15 +77,14 @@ export class AuthService {
         where: { id: verification.id },
         data: { active: false },
       });
-      return verification;
     }
 
     const newVerification = await prisma.verification.create({
       data: {
         user: { connect: { id: user.id } },
         verification_code: generateRandomHexString(10),
-        expired_at: dayjs().add(5, 'minute').toDate(),
-        active: false,
+        expired_at: dayjs().add(10, 'minute').toDate(),
+        active: true,
       },
     });
 
@@ -102,7 +112,10 @@ export class AuthService {
     if (verification.verified_at) {
       throw new UnauthorizedException('Email already verified');
     }
-    if (!verification.active || verification.expired_at < new Date()) {
+    if (
+      !verification.active ||
+      dayjs(verification.expired_at).isBefore(dayjs())
+    ) {
       throw new UnauthorizedException('Verification code has expired');
     }
 
