@@ -39,7 +39,6 @@ export class UsersService {
     if (payload.notification_each_day !== undefined) {
       data.notification_each_day = payload.notification_each_day;
     }
-    console.log({ payload });
     return await this.prisma.user.update({
       where: {
         id: payload.user_id,

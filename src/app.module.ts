@@ -9,6 +9,7 @@ import { PrismaService } from './prisma.service';
 import { WeatherModule } from './weather/weather.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MailerService } from './common/mailer/mailer.service';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MailerService } from './common/mailer/mailer.service';
     WeatherModule,
     ConfigModule.forRoot({ isGlobal: true }),
     WeatherModule,
+    CacheModule.register({ isGlobal: true }),
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],

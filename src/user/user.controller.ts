@@ -26,7 +26,7 @@ export class UserController {
   async getCurrent(@Req() request: Request) {
     const user = request['user'];
     delete user.password;
-    return user;
+    return { data: user };
   }
 
   @Get(':id')
