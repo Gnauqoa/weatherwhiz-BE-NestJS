@@ -7,16 +7,20 @@ import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma.service';
 import { WeatherModule } from './weather/weather.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { MailerService } from './common/mailer/mailer.service';
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
     CommonModule,
+    WeatherModule,
     ConfigModule.forRoot({ isGlobal: true }),
     WeatherModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, Object, MailerService],
 })
 export class AppModule {}

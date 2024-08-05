@@ -1,0 +1,18 @@
+  
+<!DOCTYPE html>
+<html>
+ <head>
+   <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+ </head>
+ <body>
+  <h1>Hi, {{ fullName }} </h1>
+  <p>This is weather status in <b>{{ location_query }}</b> </p>
+  <h2></h2>
+    <ul>
+      <li>Condition: {{ day.condition.text }} </li>
+      <li>Avg Temp: {{ day.avgtemp_c}} </li>
+      <li>Avg Humi: {{ day.avghumidity}} </li>
+      <li>Max wind: {{day.maxwind_mph}} </li>
+    </ul>
+ </body>
+</html>

@@ -13,7 +13,7 @@ export class GetForecastDto {
   @IsString()
   location_id?: number;
 }
-export class Day {
+export class DayDto {
   @IsNumber()
   maxtemp_c: number;
 
@@ -215,8 +215,8 @@ class ForecastDay {
   date_epoch: number;
 
   @ValidateNested()
-  @Type(() => Day)
-  day: Day;
+  @Type(() => DayDto)
+  day: DayDto;
 
   @ValidateNested()
   @Type(() => Astro)
